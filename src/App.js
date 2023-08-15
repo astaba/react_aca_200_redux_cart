@@ -1,11 +1,15 @@
+import { useSelector } from "react-redux";
+
 import Cart from './components/Cart/Cart';
 import Layout from './components/Layout/Layout';
 import Products from './components/Shop/Products';
 
 function App() {
+  const isCartDisplayed = useSelector((state) => state.cartState.isCartDisplayed);
+  
   return (
     <Layout>
-      <Cart />
+      {isCartDisplayed && <Cart />}
       <Products />
     </Layout>
   );

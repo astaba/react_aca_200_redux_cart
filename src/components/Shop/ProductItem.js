@@ -1,8 +1,16 @@
-import Card from '../UI/Card';
-import classes from './ProductItem.module.css';
+import { useDispatch } from "react-redux";
 
-const ProductItem = (props) => {
-  const { title, price, description } = props;
+import Card from "../UI/Card";
+import classes from "./ProductItem.module.css";
+import { cartActions } from "../../store-slices/cartSlice";
+
+const ProductItem = ({ item }) => {
+  const { id, title, price, description } = item;
+
+  const dispatch = useDispatch();
+  const handleAddToCart = () => {
+    dispatch(cartActions.addItem({ id, title, price, total: price, quantity: 1 }));
+  };
 
   return (
     <li className={classes.item}>
@@ -13,7 +21,7 @@ const ProductItem = (props) => {
         </header>
         <p>{description}</p>
         <div className={classes.actions}>
-          <button>Add to Cart</button>
+          <button onClick={handleAddToCart}>Add to Cart</button>
         </div>
       </Card>
     </li>
