@@ -3,7 +3,6 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   cartItems: [],
   cartSize: 0,
-  isCartDisplayed: false,
 };
 
 const cartSlice = createSlice({
@@ -11,15 +10,17 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     addItem(state, action) {
-      const id = action.payload.id;
-      const index = state.cartItems.findIndex((item) => item.id === id);
-      if (index === -1) {
-        state.cartItems.push(action.payload);
+      const newItem = action.payload;
+      const existingItem = state.cartItems.find((item) => item.id === newItem.id);
+      if (!existingItem) {
+        state.cartItems.push({
+          ...newItem,
+          quantity: 1,
+          total: newItem.price,
+        });
       } else {
-        state.cartItems[index].quantity++;
-        const qty = state.cartItems[index].quantity;
-        const price = state.cartItems[index].price;
-        state.cartItems[index].total = qty * price;
+        existingItem.quantity++;
+        existingItem.total = existingItem.quantity * existingItem.price;
       }
       state.cartSize = state.cartItems.reduce((previousValue, currentItem) => {
         return previousValue + currentItem.quantity;
@@ -27,22 +28,16 @@ const cartSlice = createSlice({
     },
     removeItem(state, action) {
       const id = action.payload.id;
-      const index = state.cartItems.findIndex((item) => item.id === id);
-      if (state.cartItems[index].quantity === 1) {
-        state.cartItems.splice(index, 1);
+      const existingItem = state.cartItems.find((item) => item.id === id);
+      if (existingItem.quantity === 1) {
+        state.cartItems = state.cartItems.filter((item) => item.id !== id)
       } else {
-        state.cartItems[index].quantity--;
-        const qty = state.cartItems[index].quantity;
-        const price = state.cartItems[index].price;
-        state.cartItems[index].total = qty * price;
+        existingItem.quantity--;
+        existingItem.total = existingItem.quantity * existingItem.price;
       }
       state.cartSize = state.cartItems.reduce((previousValue, currentItem) => {
         return previousValue + currentItem.quantity;
       }, 0);
-      if (state.cartSize === 0) state.isCartDisplayed = false;
-    },
-    toggleCart(state, action) {
-      state.isCartDisplayed = !state.isCartDisplayed;
     },
   },
 });

@@ -9,7 +9,7 @@ const ProductItem = ({ item }) => {
 
   const dispatch = useDispatch();
   const handleAddToCart = () => {
-    dispatch(cartActions.addItem({ id, title, price, total: price, quantity: 1 }));
+    dispatch(cartActions.addItem({ id, title, price}));
   };
 
   return (
