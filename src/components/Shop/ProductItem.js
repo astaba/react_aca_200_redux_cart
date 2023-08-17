@@ -1,4 +1,4 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 import Card from "../UI/Card";
 import classes from "./ProductItem.module.css";
@@ -6,35 +6,10 @@ import { cartActions } from "../../store-slices/cartSlice";
 
 const ProductItem = ({ item }) => {
   const { id, title, price, description } = item;
-  const cart = useSelector((state) => state.cartState);
 
   const dispatch = useDispatch();
   const handleAddToCart = () => {
-    const newCartSize = cart.cartSize + 1;
-    // Be extremely cautious never to mutate referenced value states
-    const newCartItems = cart.cartItems.slice();
-    const existingItem = newCartItems.find((item) => item.id === id);
-    if (!existingItem) {
-      newCartItems.push({ id, title, price, quantity: 1, total: price });
-    } else {
-    // Be extremely cautious never to mutate referenced value states
-      const updatedItem = { ...existingItem };
-      updatedItem.quantity++; 
-      updatedItem.total += price;
-      const existingItemIndex = newCartItems.findIndex((item) => item.id === id);
-      newCartItems[existingItemIndex] = updatedItem;
-    }
-    const newCart = {
-      newCartItems,
-      newCartSize,
-    };
-
-    dispatch(cartActions.replaceCart(newCart));
-
-    // fetch("https://max-react-20-redux-default-rtdb.firebaseio.com/cart.json", {
-    //   method: "PUT",
-    //   body: JSON.stringify(newCart),
-    // })
+    dispatch(cartActions.addItem({ id, title, price}));
   };
 
   return (
