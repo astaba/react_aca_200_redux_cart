@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   isCartDisplayed: false,
+  notification: null, 
 };
 
 const uiSlice = createSlice({
@@ -13,6 +14,9 @@ const uiSlice = createSlice({
         ? action.payload.switcher
         : !state.isCartDisplayed;
     },
+    notify(state, action) {
+      state.notification = action.payload;
+    }
   },
 });
 

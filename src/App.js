@@ -1,48 +1,27 @@
-import { useEffect, useReducer, Fragment } from "react";
-import { useSelector } from "react-redux";
+import { useEffect, Fragment } from "react";
+import { useSelector, useDispatch } from "react-redux";
 
 import Cart from "./components/Cart/Cart";
 import Layout from "./components/Layout/Layout";
 import Products from "./components/Shop/Products";
 import Notification from "./components/UI/Notification";
-
-const putReducer = (state, action) => {
-  switch (action.type) {
-    case "PUT_INIT":
-      return {
-        status: "pending",
-        title: "Is pending...",
-        message: "The PUT request was launched",
-      };
-    case "PUT_SUCCEED":
-      return {
-        status: "success",
-        title: "Success!",
-        message: "Cart successfully updated!",
-      };
-    case "PUT_FAILED":
-      return {
-        status: "error",
-        title: "Failed!",
-        message: action.payload,
-      };
-    default:
-      throw new Error(`Unexpected action type: ${action.type}`);
-  }
-};
+import { uiActions } from "./store-slices/uiSlice";
 
 function App() {
   const isCartDisplayed = useSelector((state) => state.uiState.isCartDisplayed);
   const cart = useSelector((state) => state.cartState);
-  const [putRequestState, putDispatch] = useReducer(putReducer, {
-    status: "",
-    title: "",
-    message: "",
-  });
+  const notification = useSelector((state) => state.uiState.notification);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const launchPut = async () => {
-      putDispatch({ type: "PUT_INIT" });
+      dispatch(
+        uiActions.notify({
+          status: "pending",
+          title: "Is pending...",
+          message: "The PUT request was launched",
+        })
+      );
       try {
         const response = await fetch(
           "https://max-react-20-redux-default-rtdb.firebaseio.com/cart.json",
@@ -54,9 +33,21 @@ function App() {
         if (!response.ok) {
           throw new Error("Something went wrong");
         }
-        putDispatch({ type: "PUT_SUCCEED" });
+        dispatch(
+          uiActions.notify({
+            status: "success",
+            title: "Success!",
+            message: "Cart successfully updated!",
+          })
+        );
       } catch (error) {
-        putDispatch({ type: "PUT_FAILED", payload: error.message });
+        dispatch(
+          uiActions.notify({
+            status: "error",
+            title: "Failed!",
+            message: error.message,
+          })
+        );
       }
     };
 
@@ -65,11 +56,13 @@ function App() {
 
   return (
     <Fragment>
-      <Notification
-        status={putRequestState.status}
-        title={putRequestState.title}
-        message={putRequestState.message}
-      />
+      {notification && (
+        <Notification
+          status={notification.status}
+          title={notification.title}
+          message={notification.message}
+        />
+      )}
       <Layout>
         {isCartDisplayed && <Cart />}
         <Products />
