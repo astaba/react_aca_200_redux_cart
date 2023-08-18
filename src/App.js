@@ -7,6 +7,8 @@ import Products from "./components/Shop/Products";
 import Notification from "./components/UI/Notification";
 import { uiActions } from "./store-slices/uiSlice";
 
+let isInitialRender = true;
+
 function App() {
   const isCartDisplayed = useSelector((state) => state.uiState.isCartDisplayed);
   const cart = useSelector((state) => state.cartState);
@@ -50,6 +52,11 @@ function App() {
         );
       }
     };
+
+    if (isInitialRender) {
+      isInitialRender = false;
+      return;
+    }
 
     launchPut();
   }, [cart]);
