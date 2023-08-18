@@ -16,6 +16,15 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    let timer = null;
+    if (!notification) return;
+    timer = setInterval(() => {
+      dispatch(uiActions.notify(null));
+    }, 3000);
+    return () => clearInterval(timer);
+  }, [notification]);
+
+  useEffect(() => {
     const launchPut = async () => {
       dispatch(
         uiActions.notify({
