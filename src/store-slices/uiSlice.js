@@ -1,8 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+import { launchPutCart, launchGetCart } from "../async-action/asyncThunk";
+
 const initialState = {
   isCartDisplayed: false,
-  notification: null, 
+  notification: null,
 };
 
 const uiSlice = createSlice({
@@ -16,7 +18,44 @@ const uiSlice = createSlice({
     },
     notify(state, action) {
       state.notification = action.payload;
-    }
+    },
+  },
+  extraReducers(builder) {
+    builder.addCase(launchPutCart.pending, (state, action) => {
+      state.notification = {
+        status: "pending",
+        title: "Is pending...",
+        message: "The PUT request was launched",
+      };
+    });
+    builder.addCase(launchPutCart.fulfilled, (state, action) => {
+      state.notification = {
+        status: "success",
+        title: "Success!",
+        message: "Updated cart successfully!",
+      };
+    });
+    builder.addCase(launchPutCart.rejected, (state, action) => {
+      state.notification = {
+        status: "error",
+        title: "Failed!",
+        message: action.error.message,
+      };
+    });
+    builder.addCase(launchGetCart.fulfilled, (state, action) => {
+      state.notification = {
+        status: "success",
+        title: "Success!",
+        message: "Fetched cart successfully!",
+      };
+    });
+    builder.addCase(launchGetCart.rejected, (state, action) => {
+      state.notification = {
+        status: "error",
+        title: "Failed!",
+        message: action.error.message,
+      };
+    });
   },
 });
 

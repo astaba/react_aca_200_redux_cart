@@ -4,11 +4,17 @@ import { useSelector, useDispatch } from "react-redux";
 import classes from "./CartButton.module.css";
 import { uiActions } from "../../store-slices/uiSlice";
 
+let isInitialRender = true;
+
 const CartButton = (props) => {
   const cartSize = useSelector((state) => state.cartState.cartSize);
 
   const dispatch = useDispatch();
   useEffect(() => {
+    if(isInitialRender) {
+      isInitialRender = false;
+      return;
+    }
     if (cartSize === 0) dispatch(uiActions.toggleCart({ switcher: false }));
   }, [dispatch, cartSize]);
 

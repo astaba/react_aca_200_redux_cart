@@ -6,6 +6,7 @@ import Layout from "./components/Layout/Layout";
 import Products from "./components/Shop/Products";
 import Notification from "./components/UI/Notification";
 import { uiActions } from "./store-slices/uiSlice";
+import { launchPutCart, launchGetCart } from "./async-action/asyncThunk";
 
 let isInitialRender = true;
 
@@ -25,49 +26,17 @@ function App() {
   }, [notification]);
 
   useEffect(() => {
-    const launchPut = async () => {
-      dispatch(
-        uiActions.notify({
-          status: "pending",
-          title: "Is pending...",
-          message: "The PUT request was launched",
-        })
-      );
-      try {
-        const response = await fetch(
-          "https://max-react-20-redux-default-rtdb.firebaseio.com/cart.json",
-          {
-            method: "PUT",
-            body: JSON.stringify(cart),
-          }
-        );
-        if (!response.ok) {
-          throw new Error("Something went wrong");
-        }
-        dispatch(
-          uiActions.notify({
-            status: "success",
-            title: "Success!",
-            message: "Cart successfully updated!",
-          })
-        );
-      } catch (error) {
-        dispatch(
-          uiActions.notify({
-            status: "error",
-            title: "Failed!",
-            message: error.message,
-          })
-        );
-      }
-    };
+    dispatch(launchGetCart());
+  }, []);
 
+  useEffect(() => {
     if (isInitialRender) {
       isInitialRender = false;
       return;
     }
-
-    launchPut();
+    if (cart.changed) {
+      dispatch(launchPutCart(cart));
+    }
   }, [cart]);
 
   return (
